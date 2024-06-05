@@ -1,11 +1,3 @@
--- DROP TABLES
-
-DROP TABLE IF EXISTS employees CASCADE;
-DROP TABLE IF EXISTS shops CASCADE;
-DROP TABLE IF EXISTS locations CASCADE;
-DROP TABLE IF EXISTS suppliers CASCADE;
-
-
 -- CREATE TABLES ========================================
 
 -- Create employees table 
