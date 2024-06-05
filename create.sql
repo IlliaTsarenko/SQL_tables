@@ -1113,4 +1113,202 @@ INSERT INTO employees VALUES (450209, 'Craggie', 'Kryska', 'ckryskarp@ycombinato
 INSERT INTO employees VALUES (649003, 'Sonya', 'Klassmann', 'sklassmannrq@shop-pro.jp', '2020/03/29', 'F', 45751, 4);
 INSERT INTO employees VALUES (217484, 'Caldwell', 'Bridgeman', 'cbridgemanrr@ow.ly', '2020/11/11', 'M', 30140, 3);
 
+-- Queries
+
+-- List of Employees in Each Coffee Shop
+SELECT 
+    shops.coffeeshop_name, 
+    employees.first_name, 
+    employees.last_name
+FROM 
+    employees
+JOIN 
+    shops ON employees.coffeeshop_id = shops.coffeeshop_id
+ORDER BY 
+    shops.coffeeshop_name, 
+    employees.last_name, 
+    employees.first_name;
+
+-- Total Number of Employees in Each City
+SELECT 
+    locations.city, 
+    COUNT(employees.employee_id) AS num_employees
+FROM 
+    employees
+JOIN 
+    shops ON employees.coffeeshop_id = shops.coffeeshop_id
+JOIN 
+    locations ON shops.city_id = locations.city_id
+GROUP BY 
+    locations.city
+ORDER BY 
+    num_employees DESC;
+
+-- Coffee Shops with Employees Hired After 2015
+SELECT 
+    shops.coffeeshop_name, 
+    employees.first_name, 
+    employees.last_name, 
+    employees.hire_date
+FROM 
+    employees
+JOIN 
+    shops ON employees.coffeeshop_id = shops.coffeeshop_id
+WHERE 
+    employees.hire_date > '2015-01-01'
+ORDER BY 
+    employees.hire_date DESC;
+
+-- List of Suppliers for Each Coffee Shop
+
+SELECT 
+    shops.coffeeshop_name, 
+    STRING_AGG(suppliers.supplier_name, ', ') AS suppliers
+FROM 
+    suppliers
+JOIN 
+    shops ON suppliers.coffeeshop_id = shops.coffeeshop_id
+GROUP BY 
+    shops.coffeeshop_name
+ORDER BY 
+    shops.coffeeshop_name;
+
+-- Number of Suppliers per Coffee Shop
+SELECT 
+    shops.coffeeshop_name, 
+    COUNT(DISTINCT suppliers.supplier_name) AS num_suppliers
+FROM 
+    suppliers
+JOIN 
+    shops ON suppliers.coffeeshop_id = shops.coffeeshop_id
+GROUP BY 
+    shops.coffeeshop_name
+ORDER BY 
+    num_suppliers DESC;
+
+
+-- Advanced Queries
+
+-- Average Salary and Number of Employees per Coffee Shop
+SELECT 
+    shops.coffeeshop_name, 
+    locations.city, 
+    locations.country,
+    COUNT(employees.employee_id) AS num_employees,
+    AVG(employees.salary) AS avg_salary
+FROM 
+    shops
+JOIN 
+    employees ON shops.coffeeshop_id = employees.coffeeshop_id
+JOIN 
+    locations ON shops.city_id = locations.city_id
+GROUP BY 
+    shops.coffeeshop_name, 
+    locations.city, 
+    locations.country
+ORDER BY 
+    avg_salary DESC;
+
+
+-- Coffee Types Provided by Each Coffee Shop
+
+SELECT 
+    shops.coffeeshop_name, 
+    locations.city, 
+    locations.country,
+    STRING_AGG(DISTINCT suppliers.coffee_type, ', ') AS coffee_types
+FROM 
+    shops
+JOIN 
+    suppliers ON shops.coffeeshop_id = suppliers.coffeeshop_id
+JOIN 
+    locations ON shops.city_id = locations.city_id
+GROUP BY 
+    shops.coffeeshop_name, 
+    locations.city, 
+    locations.country
+ORDER BY 
+    shops.coffeeshop_name;
+
+
+--  Total Salary Expenditure per City
+SELECT 
+    locations.city, 
+    locations.country, 
+    SUM(employees.salary) AS total_salary_expenditure
+FROM 
+    employees
+JOIN 
+    shops ON employees.coffeeshop_id = shops.coffeeshop_id
+JOIN 
+    locations ON shops.city_id = locations.city_id
+GROUP BY 
+    locations.city, 
+    locations.country
+ORDER BY 
+    total_salary_expenditure DESC;
+
+-- Coffee Shops with the Most Diverse Coffee Types
+SELECT 
+    shops.coffeeshop_name, 
+    locations.city, 
+    locations.country,
+    COUNT(DISTINCT suppliers.coffee_type) AS num_coffee_types
+FROM 
+    shops
+JOIN 
+    suppliers ON shops.coffeeshop_id = suppliers.coffeeshop_id
+JOIN 
+    locations ON shops.city_id = locations.city_id
+GROUP BY 
+    shops.coffeeshop_name, 
+    locations.city, 
+    locations.country
+ORDER BY 
+    num_coffee_types DESC;
+
+-- Employees Hired After a Specific Date with Their Coffee Shop Information
+SELECT 
+    employees.first_name, 
+    employees.last_name, 
+    employees.email, 
+    employees.hire_date, 
+    shops.coffeeshop_name, 
+    locations.city, 
+    locations.country
+FROM 
+    employees
+JOIN 
+    shops ON employees.coffeeshop_id = shops.coffeeshop_id
+JOIN 
+    locations ON shops.city_id = locations.city_id
+WHERE 
+    employees.hire_date > '2020-01-01'
+ORDER BY 
+    employees.hire_date DESC;
+
+-- Rank Employees by Salary Within Each Coffee Shop
+SELECT 
+    employees.employee_id,
+    employees.first_name,
+    employees.last_name,
+    employees.salary,
+    shops.coffeeshop_name,
+    locations.city,
+    locations.country,
+    RANK() OVER (PARTITION BY employees.coffeeshop_id ORDER BY employees.salary DESC) AS salary_rank
+FROM 
+    employees
+JOIN 
+    shops ON employees.coffeeshop_id = shops.coffeeshop_id
+JOIN 
+    locations ON shops.city_id = locations.city_id
+ORDER BY 
+    shops.coffeeshop_name, 
+    salary_rank;
+
+
+
+
+
 
